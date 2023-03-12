@@ -8,7 +8,7 @@
 //   });
 
 
-const config =  require("./config");
+const config =  require("../config");
 organization = config.openapi.organization;
 apiKey = config.openapi.apiKey;
 const { Configuration, OpenAIApi } = require("openai");
