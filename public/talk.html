@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>talk</title>
+	<style>
+		.container {
+			position: fixed;
+			bottom: 0;
+			left: 50%;
+			transform: translateX(-50%);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 100%;
+			height: 80px;
+			background-color: #f2f2f2;
+		}
+
+		.input-box {
+			width: 70%;
+			height: 40px;
+			padding: 10px;
+			border: none;
+			border-radius: 20px;
+			font-size: 16px;
+			margin-right: 10px;
+		}
+
+		.send-button {
+			width: 80px;
+			height: 40px;
+			border: none;
+			border-radius: 20px;
+			background-color: #4CAF50;
+			color: white;
+			font-size: 16px;
+			cursor: pointer;
+		}
+
+	</style>
+    <script type="text/javascript" src="js/jquery-3.6.4.min.js"></script>
+    <script type="text/javascript" src="js/uuidv4.min.js"></script>
+   
+</head>
+
+<body>
+    <div id="main_div" style="display:flex;flex-direction:column;align-items:center;height:100vh;">
+
+        
+        
+      
+     
+      
+      
+    </div>
+	<div class="container">
+        <input type="input" id="talk_id" hidden="true">
+		<input type="text" id="ask_context" class="input-box" placeholder="输入您的消息...">
+		<button class="send-button" onclick="send();">发送</button>
+	</div>
+</body>
+
+<script>
+    
+    function init(){
+        var uuid = uuidv4();
+        uuid = uuid.replaceAll("-","");   
+        console.log("uuid:"+uuid); 
+        var talk_id = $("#talk_id");
+        if(talk_id.val() == null || talk_id.val() == ""){
+            talk_id.val(uuid);
+        }
+
+    }
+    init();
+    function send(){
+       
+        var talk_id = $("#talk_id").val();
+
+        var context = $("#ask_context").val();
+        if(context == null || context == ""){
+            alert("请输入问题");
+            return;
+        }
+        var ask_div = `<div id="ask" style="display:flex;justify-content:center;width:80%;margin-bottom:10px;">
+                        <label style="display:inline-block;width:100%;padding:5px;border-radius:5px;background-color:#e1f5fe;">
+                            <span style="vertical-align:middle;text-align:left; color: red;" ><b>问题：</b></span>
+                            <span style="vertical-align:middle;text-align:left;word-wrap:break-word;">${context}</span>
+                        </label>
+                        </div>`;
+        
+
+        var main_div = $("#main_div");
+        var main_div_html = main_div.html()+ask_div;
+        main_div.html(main_div_html);
+
+        $.post('/chat', { message: context,talk_id: talk_id }, function(response) {
+            var answer = response;
+            var answer_div=`<div id="answer" style="display:flex;justify-content:center;width:80%;margin-bottom:10px;">
+                                <label style="display:inline-block;width:100%;padding:5px;border-radius:5px;background-color:#f5f5f5;">
+                                    <span style="vertical-align:middle;text-align:left;color: green;"><b>回答：</b></span>
+                                    <span style="vertical-align:middle;text-align:left;word-wrap:break-word;">${answer}</span>
+                                </label>
+                            </div>`;
+            main_div_html = main_div_html + answer_div;
+            main_div.html(main_div_html);
+            console.log(response);
+        });
+        
+    }
+
+</script>
+</html>
